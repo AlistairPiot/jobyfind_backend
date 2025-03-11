@@ -23,9 +23,6 @@ class User
     private ?string $password = null;
 
     #[ORM\Column]
-    private array $role = [];
-
-    #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -53,7 +50,7 @@ class User
     private ?string $description = null;
 
     #[ORM\Column]
-    private ?bool $badge = null;
+    private ?\DateTimeImmutable $badge = null;
 
     public function getId(): ?int
     {
@@ -80,18 +77,6 @@ class User
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
-        return $this;
-    }
-
-    public function getRole(): array
-    {
-        return $this->role;
-    }
-
-    public function setRole(array $role): static
-    {
-        $this->role = $role;
 
         return $this;
     }
@@ -204,12 +189,12 @@ class User
         return $this;
     }
 
-    public function isBadge(): ?bool
+    public function getBadge(): ?\DateTimeImmutable
     {
         return $this->badge;
     }
 
-    public function setBadge(bool $badge): static
+    public function setBadge(\DateTimeImmutable $badge): static
     {
         $this->badge = $badge;
 

@@ -6,10 +6,12 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ApiResource]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
+class User implements PasswordAuthenticatedUserInterface, UserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -199,6 +201,24 @@ class User
         $this->badge = $badge;
 
         return $this;
+    }
+
+    // Implémentation des méthodes de l'interface UserInterface
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email; // Utilisation de l'email comme identifiant unique
+    }
+
+    public function eraseCredentials(): void
+    {
+        // Si vous avez des données sensibles dans l'entité (ex : mot de passe en clair), vous pouvez les effacer ici.
+        $this->password = null;
+    }
+
+    public function getRoles(): array
+    {
+        // Par défaut, vous pouvez assigner un rôle générique, comme 'ROLE_USER'
+        return ['ROLE_USER'];
     }
 
 }

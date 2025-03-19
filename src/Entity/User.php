@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -51,6 +53,41 @@ class User
 
     #[ORM\Column]
     private ?\DateTimeImmutable $badge = null;
+
+    /**
+     * @var Collection<int, Media>
+     */
+    #[ORM\OneToMany(targetEntity: Media::class, mappedBy: 'user', cascade: ['remove'])]
+    private Collection $media;
+
+    /**
+     * @var Collection<int, Mission>
+     */
+    #[ORM\OneToMany(targetEntity: Mission::class, mappedBy: 'user')]
+    private Collection $mission;
+
+    /**
+     * @var Collection<int, JobApplication>
+     */
+    #[ORM\OneToMany(targetEntity: JobApplication::class, mappedBy: 'user')]
+    private Collection $jobApplication;
+
+    /**
+     * @var Collection<int, Skill>
+     */
+    #[ORM\ManyToMany(targetEntity: Skill::class, inversedBy: 'users')]
+    private Collection $skill;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?RequestBadge $requestBadge = null;
+
+    public function __construct()
+    {
+        $this->media = new ArrayCollection();
+        $this->mission = new ArrayCollection();
+        $this->jobApplication = new ArrayCollection();
+        $this->skill = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -197,6 +234,132 @@ class User
     public function setBadge(\DateTimeImmutable $badge): static
     {
         $this->badge = $badge;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Media>
+     */
+    public function getMedia(): Collection
+    {
+        return $this->media;
+    }
+
+    public function addMedium(Media $medium): static
+    {
+        if (!$this->media->contains($medium)) {
+            $this->media->add($medium);
+            $medium->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMedium(Media $medium): static
+    {
+        if ($this->media->removeElement($medium)) {
+            // set the owning side to null (unless already changed)
+            if ($medium->getUser() === $this) {
+                $medium->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Mission>
+     */
+    public function getMission(): Collection
+    {
+        return $this->mission;
+    }
+
+    public function addMission(Mission $mission): static
+    {
+        if (!$this->mission->contains($mission)) {
+            $this->mission->add($mission);
+            $mission->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMission(Mission $mission): static
+    {
+        if ($this->mission->removeElement($mission)) {
+            // set the owning side to null (unless already changed)
+            if ($mission->getUser() === $this) {
+                $mission->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, JobApplication>
+     */
+    public function getJobApplication(): Collection
+    {
+        return $this->jobApplication;
+    }
+
+    public function addJobApplication(JobApplication $jobApplication): static
+    {
+        if (!$this->jobApplication->contains($jobApplication)) {
+            $this->jobApplication->add($jobApplication);
+            $jobApplication->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeJobApplication(JobApplication $jobApplication): static
+    {
+        if ($this->jobApplication->removeElement($jobApplication)) {
+            // set the owning side to null (unless already changed)
+            if ($jobApplication->getUser() === $this) {
+                $jobApplication->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Skill>
+     */
+    public function getSkill(): Collection
+    {
+        return $this->skill;
+    }
+
+    public function addSkill(Skill $skill): static
+    {
+        if (!$this->skill->contains($skill)) {
+            $this->skill->add($skill);
+        }
+
+        return $this;
+    }
+
+    public function removeSkill(Skill $skill): static
+    {
+        $this->skill->removeElement($skill);
+
+        return $this;
+    }
+
+    public function getRequestBadge(): ?RequestBadge
+    {
+        return $this->requestBadge;
+    }
+
+    public function setRequestBadge(?RequestBadge $requestBadge): static
+    {
+        $this->requestBadge = $requestBadge;
 
         return $this;
     }

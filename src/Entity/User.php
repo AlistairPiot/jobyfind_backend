@@ -26,6 +26,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
+    #[ORM\Column(type: Types::JSON)]
+    private array $roles = [];
+
     #[ORM\Column(type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'])]
     private ?\DateTimeInterface $createdAt = null;
 
@@ -90,6 +93,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->jobApplication = new ArrayCollection();
         $this->skill = new ArrayCollection();
         $this->createdAt = new \DateTime();
+        // Par défaut, l'utilisateur a un rôle de "ROLE_USER"
+        $this->roles[] = 'ROLE_USER';
     }
 
     public function getId(): ?int
@@ -376,9 +381,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
+    // Getter et setter pour $roles
     public function getRoles(): array
     {
-        return ['ROLE_USER'];
+        return array_unique($this->roles); // Éviter les doublons
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+        return $this;
     }
 
     public function eraseCredentials(): void

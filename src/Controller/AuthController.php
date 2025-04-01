@@ -31,6 +31,15 @@ class AuthController extends AbstractController
 
         $email = $data['email'] ?? '';
         $plainPassword = $data['password'] ?? '';
+        $requestedRole = $data['role'] ?? '';
+
+        // Liste des rôles autorisés
+        $allowedRoles = ['ROLE_SCHOOL', 'ROLE_COMPANY', 'ROLE_FREELANCE'];
+
+        // Vérifier si le rôle est valide
+        if (!in_array($requestedRole, $allowedRoles)) {
+            return new JsonResponse(['error' => 'Invalid role'], 400);
+        }
 
         // Vérifier si l'utilisateur existe déjà
         $existingUser = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
@@ -46,12 +55,17 @@ class AuthController extends AbstractController
         $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
         $user->setPassword($hashedPassword);
 
-        // Sauvegarder dans la base de données
+        // Définir le rôle choisi par l'utilisateur (après validation)
+        $user->setRoles([$requestedRole]);
+
+        // Sauvegarder en base de données
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        return new JsonResponse(['message' => 'User created successfully ^^'], 201);
+        return new JsonResponse(['message' => 'User created successfully', 'role' => $requestedRole], 201);
     }
+
+
 
     #[Route('/api/login', name: 'api_login', methods: ['POST'])]
     public function login(Request $request): JsonResponse
@@ -75,8 +89,10 @@ class AuthController extends AbstractController
         // Générer un token JWT
         $token = $this->JWTManager->create($user);
 
-        return new JsonResponse(['token' => $token]);
+        // Retourner le token et les rôles de l'utilisateur
+        return new JsonResponse([
+            'token' => $token,
+            'roles' => $user->getRoles()  // Ajouter les rôles de l'utilisateur dans la réponse
+        ]);
     }
-
 }
-

@@ -36,7 +36,7 @@ class AuthController extends AbstractController
         // Liste des rôles autorisés
         $allowedRoles = ['ROLE_SCHOOL', 'ROLE_COMPANY', 'ROLE_FREELANCE'];
 
-        // Vérifier si le rôle est valide
+        // Vérifier si le rôle n'est pas valide
         if (!in_array($requestedRole, $allowedRoles)) {
             return new JsonResponse(['error' => 'Invalid role'], 400);
         }

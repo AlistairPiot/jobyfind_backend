@@ -2,14 +2,17 @@ api_platform:
     title: Hello API Platform
     version: 1.0.0
     formats:
-        json:
-            mime_types: ['application/json', 'application/ld+json']
+        jsonld: ["application/ld+json"] # Je précise explicitement le format jsonld ici
+        json: ["application/json"] # Format JSON classique
+        html: ["text/html"] # Format HTML (optionnel pour la documentation)
     defaults:
         stateless: true
         cache_headers:
-            vary: ['Content-Type', 'Authorization', 'Origin']
+            vary: ["Content-Type", "Authorization", "Origin"]
     swagger:
         api_keys:
             JWT:
                 name: Authorization
                 type: header
+    mapping:
+        paths: ["%kernel.project_dir%/src/Entity"] # Cette ligne permet à API Platform de chercher les entités dans le dossier src/Entity

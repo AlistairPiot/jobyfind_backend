@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
     app:
         build:
@@ -33,6 +31,14 @@ services:
             MYSQL_DATABASE: jobyfind
         ports:
             - "3306:3306"
+        networks:
+            - jobyfind-network
+
+    php:
+        image: php:8.2-fpm # Utilisation de PHP avec FPM
+        container_name: jobyfind-php
+        volumes:
+            - .:/var/www/html # Montage du code source
         networks:
             - jobyfind-network
 

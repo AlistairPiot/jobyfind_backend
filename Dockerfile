@@ -10,8 +10,8 @@ RUN apt-get update && apt-get install -y \
     git \
     zip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql \
-    && docker-php-ext-enable pdo_mysql  # Activer pdo_mysql
+    && docker-php-ext-install pdo pdo_mysql gd \
+    && docker-php-ext-enable pdo_mysql # Activer pdo_mysql
 
 # Installer Composer
 COPY --from=composer:2.5.5 /usr/bin/composer /usr/bin/composer

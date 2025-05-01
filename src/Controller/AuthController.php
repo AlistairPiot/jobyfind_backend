@@ -92,7 +92,8 @@ class AuthController extends AbstractController
         // Retourner le token et les rôles de l'utilisateur
         return new JsonResponse([
             'token' => $token,
-            'roles' => $user->getRoles()  // Ajouter les rôles de l'utilisateur dans la réponse
+            'roles' => $user->getRoles(), // Ajouter les rôles de l'utilisateur dans la réponse
+            'userId' => $user->getId(),
         ]);
     }
 }

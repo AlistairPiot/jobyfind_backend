@@ -27,9 +27,11 @@ class Mission
     private ?string $name = null;
 
     #[ORM\ManyToOne(inversedBy: 'mission')]
+    #[ApiProperty(readableLink: true, writableLink: true)] // Indique que c'est une relation URL
     private ?User $user = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ApiProperty(readableLink: true, writableLink: true)]
     #[ORM\JoinColumn(nullable: false)]
     private ?Type $type = null;
 

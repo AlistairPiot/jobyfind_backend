@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\Get;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
 use App\Repository\MissionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -19,7 +20,15 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ApiResource(
     // Spécifie les groupes de lecture à exposer pour cette ressource
-    normalizationContext: ['groups' => ['mission:read']]
+    normalizationContext: ['groups' => ['mission:read']],
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Put(),
+        new Patch(),
+        new Delete()
+    ]
 )]
 #[ApiFilter(SearchFilter::class, properties: ['user.id' => 'exact'])]
 #[ORM\Entity(repositoryClass: MissionRepository::class)]

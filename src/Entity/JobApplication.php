@@ -38,6 +38,7 @@ class JobApplication
      * @var Collection<int, Mission>
      */
     #[ORM\ManyToMany(targetEntity: Mission::class, mappedBy: 'jobApplication')]
+    #[Groups(['job_application:read'])] 
     private Collection $missions;
 
     public function __construct()

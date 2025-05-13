@@ -38,13 +38,13 @@ class Mission
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['mission:read'])]
+    #[Groups(['mission:read','job_application:read'])]
     private ?int $id = null;
 
     private $tempField;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['mission:read'])]
+    #[Groups(['mission:read','job_application:read'])]
     private ?string $name = null;
 
     #[ORM\ManyToOne(inversedBy: 'mission')]
@@ -55,7 +55,7 @@ class Mission
     #[ORM\ManyToOne(inversedBy: 'missions')]
     #[ApiProperty(readableLink: true, writableLink: true)] // Idem ici
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['mission:read', 'type:read'])]
+    #[Groups(['mission:read','job_application:read'])]
     private ?Type $type = null;
 
     /**

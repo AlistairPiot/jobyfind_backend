@@ -7,23 +7,31 @@ use App\Repository\JobApplicationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups; 
 
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['job_application:read']],
+    denormalizationContext: ['groups' => ['job_application:write']]
+)]
 #[ORM\Entity(repositoryClass: JobApplicationRepository::class)]
 class JobApplication
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['job_application:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['job_application:read', 'job_application:write'])]
     private ?string $status = null;
 
     #[ORM\Column]
+    #[Groups(['job_application:read', 'job_application:write'])]
     private ?\DateTimeImmutable $DateApplied = null;
 
     #[ORM\ManyToOne(inversedBy: 'jobApplication')]
+    #[Groups(['job_application:read', 'job_application:write'])]
     private ?User $user = null;
 
     /**

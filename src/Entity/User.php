@@ -10,9 +10,11 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Serializer\Annotation\Groups; 
 
 #[ApiResource(
-    normalizationContext: ['groups' => ['user:read']]
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:write']]
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -20,11 +22,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['mission:read'])]
+    #[Groups(['mission:read', 'job_application:read', 'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, unique: true)]
-    #[Groups(['mission:read'])]
+    #[Groups(['mission:read', 'job_application:read', 'user:read'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
@@ -49,12 +51,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $nameCompany = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['job_application:read', 'user:read'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['job_application:read', 'user:read'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['job_application:read', 'user:read'])]
     private ?string $contactEmail = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

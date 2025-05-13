@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
     normalizationContext: ['groups' => ['job_application:read']],
-    denormalizationContext: ['groups' => ['job_application:write']]
+    denormalizationContext: ['groups' => ['job_application:write']],
 )]
 #[ORM\Entity(repositoryClass: JobApplicationRepository::class)]
 class JobApplication
@@ -38,7 +38,7 @@ class JobApplication
      * @var Collection<int, Mission>
      */
     #[ORM\ManyToMany(targetEntity: Mission::class, mappedBy: 'jobApplication')]
-    #[Groups(['job_application:read'])] 
+    #[Groups(['job_application:read', 'job_application:write'])]
     private Collection $missions;
 
     public function __construct()

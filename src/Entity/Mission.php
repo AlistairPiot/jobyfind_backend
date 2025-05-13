@@ -22,6 +22,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ApiResource(
     // Spécifie les groupes de lecture à exposer pour cette ressource
     normalizationContext: ['groups' => ['mission:read']],
+    denormalizationContext: ['groups' => ['mission:write']],
     operations: [
         new Get(),
         new GetCollection(),

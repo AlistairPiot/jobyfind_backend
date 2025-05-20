@@ -17,6 +17,7 @@ use App\Repository\MissionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiProperty;
 
 
 #[ApiResource(
@@ -45,18 +46,18 @@ class Mission
     private $tempField;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['mission:read','job_application:read'])]
+    #[Groups(['mission:read','job_application:read','mission:write'])]
     private ?string $name = null;
 
     #[ORM\ManyToOne(inversedBy: 'mission')]
     #[ApiProperty(readableLink: true, writableLink: true)] // Indique que c'est une relation URL
-    #[Groups(['mission:read', 'user:read'])]
+    #[Groups(['mission:read', 'user:read', 'mission:write'])]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'missions')]
     #[ApiProperty(readableLink: true, writableLink: true)] // Idem ici
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['mission:read','job_application:read'])]
+    #[Groups(['mission:read','job_application:read', 'mission:write'])]
     private ?Type $type = null;
 
     /**
@@ -66,6 +67,7 @@ class Mission
     private Collection $jobApplication;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['mission:read','mission:write'])]
     private ?string $description = null;
 
     public function __construct()

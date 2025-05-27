@@ -48,17 +48,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $locationCode = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $nameCompany = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $nameSchool = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['job_application:read', 'user:read'])]
+    #[Groups(['job_application:read', 'user:read', 'user:write'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['job_application:read', 'user:read'])]
+    #[Groups(['job_application:read', 'user:read', 'user:write'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -69,7 +71,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?\DateTimeImmutable $badge = null;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[Groups(['user:read', 'user:write'])]
+    private ?RequestBadge $requestBadge = null;
 
     /**
      * @var Collection<int, Media>
@@ -94,9 +101,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\ManyToMany(targetEntity: Skill::class, inversedBy: 'users')]
     private Collection $skill;
-
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?RequestBadge $requestBadge = null;
 
     public function __construct()
     {
@@ -263,11 +267,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->badge;
     }
 
-    public function setBadge(\DateTimeImmutable $badge): static
+    public function setBadge($badge): static
     {
+    // Si c'est une chaîne, convertir en DateTimeImmutable
+    if (is_string($badge)) {
+        $this->badge = new \DateTimeImmutable($badge);
+    } 
+    // Si c'est déjà un DateTimeImmutable, l'utiliser directement
+    else if ($badge instanceof \DateTimeImmutable) {
         $this->badge = $badge;
-
-        return $this;
+    }
+    // Si null, accepter aussi
+    else if ($badge === null) {
+        $this->badge = null;
+    }
+    return $this;
     }
 
     /**

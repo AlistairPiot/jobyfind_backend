@@ -51,6 +51,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $nameCompany = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    private ?string $nameSchool = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['job_application:read', 'user:read'])]
     private ?string $firstName = null;
 
@@ -191,6 +194,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setNameCompany(?string $nameCompany): static
     {
         $this->nameCompany = $nameCompany;
+
+        return $this;
+    }
+
+    public function getNameSchool(): ?string
+    {
+        return $this->nameSchool;
+    }
+
+    public function setNameSchool(?string $nameSchool): static
+    {
+        $this->nameSchool = $nameSchool;
 
         return $this;
     }

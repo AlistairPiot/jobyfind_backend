@@ -25,7 +25,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['mission:read', 'job_application:read', 'user:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255, unique: true)]
+    #[ORM\Column(length: 180, unique: true)]
     #[Groups(['mission:read', 'job_application:read', 'user:read'])]
     private ?string $email = null;
 
@@ -34,9 +34,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: Types::JSON)]
     private array $roles = [];
-
-    #[ORM\Column(type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'])]
-    private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $locationCity = null;
@@ -108,7 +105,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->mission = new ArrayCollection();
         $this->jobApplication = new ArrayCollection();
         $this->skill = new ArrayCollection();
-        $this->createdAt = new \DateTime();
         // Par défaut, l'utilisateur a un rôle de "ROLE_USER"
         $this->roles[] = 'ROLE_USER';
     }
@@ -138,18 +134,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
 
         return $this;
     }

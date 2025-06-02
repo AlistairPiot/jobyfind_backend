@@ -32,11 +32,11 @@ class Type
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['mission:read'])]
+    #[Groups(['mission:read', 'job_application:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['mission:read', 'type:read', 'type:write'])]
+    #[Groups(['mission:read', 'job_application:read', 'type:read', 'type:write'])]
     private ?string $name = null;
 
     /**

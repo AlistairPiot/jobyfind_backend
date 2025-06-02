@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\JobApplicationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -13,6 +15,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     normalizationContext: ['groups' => ['job_application:read']],
     denormalizationContext: ['groups' => ['job_application:write']],
 )]
+#[ApiFilter(SearchFilter::class, properties: ['user.id' => 'exact', 'missions.id' => 'exact'])]
 #[ORM\Entity(repositoryClass: JobApplicationRepository::class)]
 class JobApplication
 {

@@ -51,7 +51,7 @@ class Mission
 
     #[ORM\ManyToOne(inversedBy: 'mission')]
     #[ApiProperty(readableLink: true, writableLink: true)] // Indique que c'est une relation URL
-    #[Groups(['mission:read', 'user:read', 'mission:write'])]
+    #[Groups(['mission:read', 'job_application:read', 'user:read', 'mission:write'])]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'missions')]

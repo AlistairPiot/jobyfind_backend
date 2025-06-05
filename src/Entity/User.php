@@ -45,7 +45,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $locationCode = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['mission:read', 'user:read', 'user:write'])]
+    #[Groups(['mission:read', 'job_application:read', 'user:read', 'user:write'])]
     private ?string $nameCompany = null;
 
     #[ORM\Column(length: 255, nullable: true)]

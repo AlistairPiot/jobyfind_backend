@@ -6,6 +6,7 @@ use App\Entity\RequestBadge;
 use App\Entity\User;
 use App\Repository\RequestBadgeRepository;
 use App\Repository\UserRepository;
+use App\Repository\MissionRecommendationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,7 +22,8 @@ class RequestBadgeController extends AbstractController
         private EntityManagerInterface $entityManager,
         private RequestBadgeRepository $requestBadgeRepository,
         private UserRepository $userRepository,
-        private SerializerInterface $serializer
+        private SerializerInterface $serializer,
+        private MissionRecommendationRepository $missionRecommendationRepository
     ) {}
 
     #[Route('/request_badges/school/{schoolId}', name: 'get_school_badge_requests', methods: ['GET'])]
@@ -217,21 +219,35 @@ class RequestBadgeController extends AbstractController
             return new JsonResponse(['error' => 'Cet utilisateur n\'a pas de badge'], Response::HTTP_BAD_REQUEST);
         }
 
-        // Retirer le badge
-        $user->setBadge(null);
-
-        // Optionnel : marquer les demandes de badge comme annulées
-        $badgeRequests = $this->requestBadgeRepository->findBy([
+        // Récupérer les demandes de badge acceptées pour identifier l'école qui a accordé le badge
+        $acceptedBadgeRequests = $this->requestBadgeRepository->findBy([
             'user' => $user,
             'status' => 'ACCEPTED'
         ]);
 
-        foreach ($badgeRequests as $request) {
+        // Retirer le badge
+        $user->setBadge(null);
+
+        // Marquer les demandes de badge comme révoquées et supprimer les recommandations
+        foreach ($acceptedBadgeRequests as $request) {
             $request->setStatus('REVOKED');
+            
+            // Supprimer toutes les recommandations de missions de cette école pour cet étudiant
+            $recommendations = $this->missionRecommendationRepository->findBy([
+                'student' => $user,
+                'school' => $request->getSchool()
+            ]);
+
+            foreach ($recommendations as $recommendation) {
+                $this->entityManager->remove($recommendation);
+            }
         }
 
         $this->entityManager->flush();
 
-        return new JsonResponse(['message' => 'Badge retiré avec succès'], Response::HTTP_OK);
+        return new JsonResponse([
+            'message' => 'Badge retiré avec succès',
+            'info' => 'Les recommandations de missions de cette école ont également été supprimées'
+        ], Response::HTTP_OK);
     }
 } 

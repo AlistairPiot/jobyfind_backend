@@ -32,6 +32,29 @@ class UserRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * Trouve les étudiants badgés par une école spécifique
+     */
+    public function findBadgedStudentsBySchool(int $schoolId): array
+    {
+        $connection = $this->getEntityManager()->getConnection();
+        
+        $sql = "
+            SELECT u.id, u.email, u.first_name, u.last_name, u.badge
+            FROM user u
+            INNER JOIN request_badge rb ON rb.user_id = u.id
+            WHERE rb.school_id = :schoolId 
+            AND rb.status = 'ACCEPTED'
+            AND u.badge IS NOT NULL
+            ORDER BY u.first_name ASC, u.last_name ASC, u.email ASC
+        ";
+        
+        $stmt = $connection->prepare($sql);
+        $result = $stmt->executeQuery(['schoolId' => $schoolId]);
+        
+        return $result->fetchAllAssociative();
+    }
+
     //    /**
     //     * @return User[] Returns an array of User objects
     //     */

@@ -18,6 +18,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiProperty;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ApiResource(
@@ -47,17 +48,26 @@ class Mission
 
     #[ORM\Column(length: 255)]
     #[Groups(['mission:read','job_application:read','mission:write'])]
+    #[Assert\NotBlank(message: 'Le nom de la mission est obligatoire.')]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: 'Le nom de la mission doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le nom de la mission ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $name = null;
 
     #[ORM\ManyToOne(inversedBy: 'mission')]
     #[ApiProperty(readableLink: true, writableLink: true)] // Indique que c'est une relation URL
     #[Groups(['mission:read', 'job_application:read', 'user:read', 'mission:write'])]
+    #[Assert\NotNull(message: 'L\'utilisateur créateur de la mission est obligatoire.')]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'missions')]
     #[ApiProperty(readableLink: true, writableLink: true)] // Idem ici
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['mission:read','job_application:read', 'mission:write'])]
+    #[Assert\NotNull(message: 'Le type de contrat est obligatoire.')]
     private ?Type $type = null;
 
     /**
@@ -68,6 +78,13 @@ class Mission
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['mission:read','mission:write'])]
+    #[Assert\NotBlank(message: 'La description de la mission est obligatoire.')]
+    #[Assert\Length(
+        min: 10,
+        max: 5000,
+        minMessage: 'La description doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'La description ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $description = null;
 
     public function __construct()

@@ -9,7 +9,8 @@ use App\Repository\JobApplicationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups; 
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     normalizationContext: ['groups' => ['job_application:read']],
@@ -27,14 +28,25 @@ class JobApplication
 
     #[ORM\Column(length: 255)]
     #[Groups(['job_application:read', 'job_application:write'])]
+    #[Assert\NotBlank(message: 'Le statut de la candidature est obligatoire.')]
+    #[Assert\Choice(
+        choices: ['PENDING', 'ACCEPTED', 'REJECTED', 'CANCELLED'],
+        message: 'Le statut {{ value }} n\'est pas valide. Les valeurs autorisées sont : PENDING, ACCEPTED, REJECTED, CANCELLED.'
+    )]
     private ?string $status = null;
 
     #[ORM\Column]
     #[Groups(['job_application:read', 'job_application:write'])]
+    #[Assert\NotNull(message: 'La date de candidature est obligatoire.')]
+    #[Assert\Type(
+        type: '\DateTimeImmutable',
+        message: 'La date de candidature doit être une date valide.'
+    )]
     private ?\DateTimeImmutable $DateApplied = null;
 
     #[ORM\ManyToOne(inversedBy: 'jobApplication')]
     #[Groups(['job_application:read', 'job_application:write'])]
+    #[Assert\NotNull(message: 'L\'utilisateur candidat est obligatoire.')]
     private ?User $user = null;
 
     /**
@@ -42,6 +54,10 @@ class JobApplication
      */
     #[ORM\ManyToMany(targetEntity: Mission::class, mappedBy: 'jobApplication')]
     #[Groups(['job_application:read', 'job_application:write'])]
+    #[Assert\Count(
+        min: 1,
+        minMessage: 'Au moins une mission doit être associée à la candidature.'
+    )]
     private Collection $missions;
 
     public function __construct()

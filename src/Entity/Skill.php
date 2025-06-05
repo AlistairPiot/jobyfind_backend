@@ -7,9 +7,15 @@ use App\Repository\SkillRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ApiResource]
 #[ORM\Entity(repositoryClass: SkillRepository::class)]
+#[UniqueEntity(
+    fields: ['name'],
+    message: 'Une compétence avec ce nom existe déjà.'
+)]
 class Skill
 {
     #[ORM\Id]
@@ -18,6 +24,17 @@ class Skill
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le nom de la compétence est obligatoire.')]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+        minMessage: 'Le nom de la compétence doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le nom de la compétence ne peut pas dépasser {{ limit }} caractères.'
+    )]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-ZÀ-ÿ0-9\s\.\+\#\-\_]+$/',
+        message: 'Le nom de la compétence ne peut contenir que des lettres, chiffres, espaces et certains caractères spéciaux (. + # - _).'
+    )]
     private ?string $name = null;
 
     /**

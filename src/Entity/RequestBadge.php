@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\RequestBadgeRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     normalizationContext: ['groups' => ['request_badge:read']],
@@ -22,24 +23,47 @@ class RequestBadge
 
     #[ORM\Column]
     #[Groups(['request_badge:read', 'request_badge:write'])]
+    #[Assert\NotNull(message: 'La date de demande est obligatoire.')]
+    #[Assert\Type(
+        type: '\DateTimeImmutable',
+        message: 'La date de demande doit être une date valide.'
+    )]
     private ?\DateTimeImmutable $requestDate = null;
 
     #[ORM\Column(nullable: true)]
     #[Groups(['request_badge:read', 'request_badge:write'])]
+    #[Assert\Type(
+        type: '\DateTimeImmutable',
+        message: 'La date de réponse doit être une date valide.'
+    )]
+    #[Assert\Expression(
+        "this.getResponseDate() === null or this.getResponseDate() >= this.getRequestDate()",
+        message: 'La date de réponse ne peut pas être antérieure à la date de demande.'
+    )]
     private ?\DateTimeImmutable $responseDate = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['request_badge:read', 'request_badge:write'])]
+    #[Assert\Choice(
+        choices: ['PENDING', 'APPROVED', 'REJECTED'],
+        message: 'Le statut {{ value }} n\'est pas valide. Les valeurs autorisées sont : PENDING, APPROVED, REJECTED.'
+    )]
     private ?string $status = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['request_badge:read', 'request_badge:write'])]
+    #[Assert\NotNull(message: 'L\'utilisateur demandeur est obligatoire.')]
     private ?User $user = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['request_badge:read', 'request_badge:write'])]
+    #[Assert\NotNull(message: 'L\'école est obligatoire.')]
+    #[Assert\Expression(
+        "this.getSchool() !== this.getUser()",
+        message: 'L\'utilisateur ne peut pas faire une demande de badge à lui-même.'
+    )]
     private ?User $school = null;
 
     public function getId(): ?int

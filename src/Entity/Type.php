@@ -14,6 +14,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ApiResource(
     normalizationContext: ['groups' => ['type:read']],
@@ -27,6 +29,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ]
 )]
 #[ORM\Entity(repositoryClass: TypeRepository::class)]
+#[UniqueEntity(
+    fields: ['name'],
+    message: 'Un type de contrat avec ce nom existe déjà.'
+)]
 class Type
 {
     #[ORM\Id]
@@ -37,6 +43,17 @@ class Type
 
     #[ORM\Column(length: 255)]
     #[Groups(['mission:read', 'job_application:read', 'type:read', 'type:write'])]
+    #[Assert\NotBlank(message: 'Le nom du type de contrat est obligatoire.')]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+        minMessage: 'Le nom du type de contrat doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le nom du type de contrat ne peut pas dépasser {{ limit }} caractères.'
+    )]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-ZÀ-ÿ0-9\s\-\_\/]+$/',
+        message: 'Le nom du type de contrat ne peut contenir que des lettres, chiffres, espaces, tirets, underscores et slashes.'
+    )]
     private ?string $name = null;
 
     /**

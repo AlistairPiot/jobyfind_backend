@@ -8,9 +8,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ApiResource]
 #[ORM\Entity(repositoryClass: SkillCategoryRepository::class)]
+#[UniqueEntity(
+    fields: ['name'],
+    message: 'Une catégorie de compétences avec ce nom existe déjà.'
+)]
 class SkillCategory
 {
     #[ORM\Id]
@@ -19,9 +25,27 @@ class SkillCategory
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le nom de la catégorie est obligatoire.')]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+        minMessage: 'Le nom de la catégorie doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le nom de la catégorie ne peut pas dépasser {{ limit }} caractères.'
+    )]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-ZÀ-ÿ0-9\s\.\-\_]+$/',
+        message: 'Le nom de la catégorie ne peut contenir que des lettres, chiffres, espaces et certains caractères spéciaux (. - _).'
+    )]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: 'La description de la catégorie est obligatoire.')]
+    #[Assert\Length(
+        min: 10,
+        max: 1000,
+        minMessage: 'La description doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'La description ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $description = null;
 
     /**

@@ -10,13 +10,19 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Serializer\Annotation\Groups; 
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ApiResource(
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:write']]
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[UniqueEntity(
+    fields: ['email'],
+    message: 'Cette adresse email est déjà utilisée.'
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -27,44 +33,117 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 180, unique: true)]
     #[Groups(['mission:read', 'job_application:read', 'user:read'])]
+    #[Assert\NotBlank(message: 'L\'adresse email est obligatoire.')]
+    #[Assert\Email(message: 'L\'adresse email n\'est pas valide.')]
+    #[Assert\Length(
+        max: 180,
+        maxMessage: 'L\'adresse email ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le mot de passe est obligatoire.')]
+    #[Assert\Length(
+        min: 8,
+        max: 255,
+        minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le mot de passe ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $password = null;
 
     #[ORM\Column(type: Types::JSON)]
+    #[Assert\NotNull(message: 'Les rôles sont obligatoires.')]
+    #[Assert\All([
+        new Assert\Choice(
+            choices: ['ROLE_USER', 'ROLE_COMPANY', 'ROLE_SCHOOL', 'ROLE_ADMIN', 'ROLE_FREELANCE'],
+            message: 'Le rôle {{ value }} n\'est pas valide.'
+        )
+    ])]
     private array $roles = [];
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'La ville ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $locationCity = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'La région ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $locationRegion = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'Le code postal ne peut pas dépasser {{ limit }} caractères.'
+    )]
+    #[Assert\Regex(
+        pattern: '/^\d{5}$/',
+        message: 'Le code postal doit contenir exactement 5 chiffres.'
+    )]
     private ?string $locationCode = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['mission:read', 'job_application:read', 'user:read', 'user:write'])]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'Le nom de l\'entreprise ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $nameCompany = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['user:read', 'user:write'])]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'Le nom de l\'école ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $nameSchool = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['job_application:read', 'user:read', 'user:write'])]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+        minMessage: 'Le prénom doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le prénom ne peut pas dépasser {{ limit }} caractères.'
+    )]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-ZÀ-ÿ\s\'-]+$/',
+        message: 'Le prénom ne peut contenir que des lettres, espaces, apostrophes et tirets.'
+    )]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['job_application:read', 'user:read', 'user:write'])]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+        minMessage: 'Le nom de famille doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le nom de famille ne peut pas dépasser {{ limit }} caractères.'
+    )]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-ZÀ-ÿ\s\'-]+$/',
+        message: 'Le nom de famille ne peut contenir que des lettres, espaces, apostrophes et tirets.'
+    )]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['job_application:read', 'user:read'])]
+    #[Assert\Email(message: 'L\'adresse email de contact n\'est pas valide.')]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'L\'adresse email de contact ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $contactEmail = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(
+        max: 2000,
+        maxMessage: 'La description ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]

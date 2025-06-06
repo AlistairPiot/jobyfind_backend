@@ -41,8 +41,8 @@ class RequestBadgeController extends AbstractController
             'responseDate' => null
         ]);
 
-        // Sérialiser les données
-        $data = $this->serializer->serialize($requests, 'json', ['groups' => ['request_badge:read']]);
+        // Sérialiser les données avec les informations utilisateur
+        $data = $this->serializer->serialize($requests, 'json', ['groups' => ['request_badge:read', 'user:read']]);
 
         return new JsonResponse(json_decode($data), Response::HTTP_OK);
     }

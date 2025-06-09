@@ -10,8 +10,12 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['skill_category:read']],
+    denormalizationContext: ['groups' => ['skill_category:write']]
+)]
 #[ORM\Entity(repositoryClass: SkillCategoryRepository::class)]
 #[UniqueEntity(
     fields: ['name'],
@@ -22,9 +26,11 @@ class SkillCategory
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['skill_category:read', 'skill:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['skill_category:read', 'skill_category:write', 'skill:read'])]
     #[Assert\NotBlank(message: 'Le nom de la catégorie est obligatoire.')]
     #[Assert\Length(
         min: 2,
@@ -39,6 +45,7 @@ class SkillCategory
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['skill_category:read', 'skill_category:write'])]
     #[Assert\NotBlank(message: 'La description de la catégorie est obligatoire.')]
     #[Assert\Length(
         min: 10,

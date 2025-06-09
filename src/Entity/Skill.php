@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\SkillRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -9,8 +11,13 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['skill:read']],
+    denormalizationContext: ['groups' => ['skill:write']]
+)]
+#[ApiFilter(SearchFilter::class, properties: ['skillCategory' => 'exact'])]
 #[ORM\Entity(repositoryClass: SkillRepository::class)]
 #[UniqueEntity(
     fields: ['name'],
@@ -21,9 +28,11 @@ class Skill
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['skill:read', 'mission:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['skill:read', 'skill:write', 'mission:read'])]
     #[Assert\NotBlank(message: 'Le nom de la compétence est obligatoire.')]
     #[Assert\Length(
         min: 2,
@@ -47,6 +56,7 @@ class Skill
      * @var Collection<int, SkillCategory>
      */
     #[ORM\ManyToMany(targetEntity: SkillCategory::class, inversedBy: 'skills')]
+    #[Groups(['skill:read', 'skill:write'])]
     private Collection $skillCategory;
 
     public function __construct()

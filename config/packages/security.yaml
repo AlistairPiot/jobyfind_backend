@@ -47,7 +47,7 @@ security:
         - { path: ^/api/missions/.*/recommend, roles: ROLE_SCHOOL }
         - { path: ^/api/school/.*/recommendations, roles: ROLE_SCHOOL }
 
-        # Routes spécifiques aux entreprises
+        # Routes spécifiques aux entreprises / freelances
         - { path: ^/api/payment, roles: [ROLE_COMPANY, ROLE_FREELANCE] }
 
         # Routes utilisateur authentifié

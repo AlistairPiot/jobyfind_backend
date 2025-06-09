@@ -1,4 +1,11 @@
 security:
+    # Configuration de la hiérarchie des rôles
+    role_hierarchy:
+        ROLE_ADMIN: [ROLE_COMPANY, ROLE_SCHOOL, ROLE_FREELANCE, ROLE_USER]
+        ROLE_COMPANY: [ROLE_USER]
+        ROLE_SCHOOL: [ROLE_USER]
+        ROLE_FREELANCE: [ROLE_USER]
+
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: "auto"
     providers:
@@ -10,13 +17,48 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        api_auth:
+            pattern: ^/api/(login|register)
+            stateless: true
+            security: false
         main:
+            pattern: ^/api
+            stateless: true
             lazy: true
             provider: users_database
+            jwt: ~
 
-    # access_control:
-    #     - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-    #     - { path: ^/api, roles: ROLE_USER }
+    # Contrôle d'accès
+    access_control:
+        # Routes publiques
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register, roles: PUBLIC_ACCESS }
+
+        # Documentation API Platform (accessible sans authentification)
+        - { path: ^/api/docs, roles: PUBLIC_ACCESS }
+        - { path: ^/api$, roles: PUBLIC_ACCESS }
+
+        # Routes spécifiques aux écoles
+        - { path: ^/api/request_badges/school, roles: ROLE_SCHOOL }
+        - { path: ^/api/request_badges/.*/accept, roles: ROLE_SCHOOL }
+        - { path: ^/api/request_badges/.*/reject, roles: ROLE_SCHOOL }
+        - { path: ^/api/badged_students/school, roles: ROLE_SCHOOL }
+        - { path: ^/api/school/.*/students, roles: ROLE_SCHOOL }
+        - { path: ^/api/missions/.*/recommend, roles: ROLE_SCHOOL }
+        - { path: ^/api/school/.*/recommendations, roles: ROLE_SCHOOL }
+
+        # Routes spécifiques aux entreprises
+        - { path: ^/api/payment, roles: ROLE_COMPANY }
+
+        # Routes utilisateur authentifié
+        - { path: ^/api/request_badges/user, roles: ROLE_USER }
+        - { path: ^/api/request_badges$, roles: ROLE_USER, methods: [POST] }
+        - { path: ^/api/students/.*/recommended-missions, roles: ROLE_USER }
+        - { path: ^/api/remove_badge, roles: ROLE_USER }
+        - { path: ^/api/schools, roles: ROLE_USER }
+
+        # Toutes les autres routes API nécessitent une authentification
+        - { path: ^/api, roles: ROLE_USER }
 
 when@test:
     security:

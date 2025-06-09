@@ -48,7 +48,7 @@ security:
         - { path: ^/api/school/.*/recommendations, roles: ROLE_SCHOOL }
 
         # Routes spécifiques aux entreprises
-        - { path: ^/api/payment, roles: ROLE_COMPANY }
+        - { path: ^/api/payment, roles: [ROLE_COMPANY, ROLE_FREELANCE] }
 
         # Routes utilisateur authentifié
         - { path: ^/api/request_badges/user, roles: ROLE_USER }

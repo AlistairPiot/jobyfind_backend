@@ -1,0 +1,88 @@
+# flyctl launch added from .gitignore
+
+###> symfony/framework-bundle ###
+.env.local
+.env.local.php
+.env.*.local
+config/secrets/prod/prod.decrypt.private.php
+public/bundles
+var
+vendor
+###< symfony/framework-bundle ###
+
+###> lexik/jwt-authentication-bundle ###
+config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###
+
+###> symfony/phpunit-bridge ###
+**/.phpunit.result.cache
+phpunit.xml
+###< symfony/phpunit-bridge ###
+
+###> phpunit/phpunit ###
+phpunit.xml
+**/.phpunit.result.cache
+###< phpunit/phpunit ###
+
+# flyctl launch added from .idea/.gitignore
+# Default ignored files
+.idea/shelf
+.idea/workspace.xml
+# Editor-based HTTP Client requests
+.idea/httpRequests
+# Datasource local storage ignored files
+.idea/dataSources
+.idea/dataSources.local.xml
+
+# flyctl launch added from vendor/psr/container/.gitignore
+vendor/psr/container/**/composer.lock
+vendor/psr/container/**/composer.phar
+vendor/psr/container/vendor
+
+# flyctl launch added from vendor/psr/event-dispatcher/.gitignore
+vendor/psr/event-dispatcher/vendor
+vendor/psr/event-dispatcher/**/composer.lock
+
+# flyctl launch added from vendor/sebastian/version/.gitignore
+vendor/sebastian/version/.php_cs.cache
+vendor/sebastian/version/.idea
+
+# flyctl launch added from vendor/stripe/stripe-php/.gitignore
+# Ignore build files
+vendor/stripe/stripe-php/**/build/*
+
+# Mac OS X dumps these all over the place.
+vendor/stripe/stripe-php/**/.DS_Store
+
+# Ignore the SimpleTest library if it is installed to /test/.
+vendor/stripe/stripe-php/test/simpletest
+
+# Ignore the /vendor/ directory for people using composer
+vendor/stripe/stripe-php/vendor
+
+# If the vendor directory isn't being commited the composer.lock file should also be ignored
+vendor/stripe/stripe-php/**/composer.lock
+
+# Ignore IDE's configuration files
+vendor/stripe/stripe-php/**/.idea
+
+# Ignore PHP CS Fixer local config and cache
+vendor/stripe/stripe-php/**/.php_cs
+vendor/stripe/stripe-php/**/.php_cs.cache
+vendor/stripe/stripe-php/**/.php-cs-fixer.cache
+
+# Ignore PHPStan local config
+vendor/stripe/stripe-php/**/.phpstan.neon
+
+# Ignore phpDocumentor's local config and artifacts
+vendor/stripe/stripe-php/**/.phpdoc/*
+vendor/stripe/stripe-php/**/phpdoc.xml
+
+# Ignore cached PHPUnit results.
+vendor/stripe/stripe-php/**/.phpunit.result.cache
+
+# flyctl launch added from vendor/willdurand/negotiation/.gitignore
+vendor/willdurand/negotiation/vendor
+vendor/willdurand/negotiation/**/composer.lock
+vendor/willdurand/negotiation/**/.phpunit.result.cache
+fly.toml

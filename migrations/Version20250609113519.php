@@ -23,15 +23,15 @@ final class Version20250609113519 extends AbstractMigration
         
         // Créer la table mission_skill seulement si elle n'existe pas
         if (!$schema->hasTable('mission_skill')) {
-            $this->addSql(<<<'SQL'
-                CREATE TABLE mission_skill (mission_id INT NOT NULL, skill_id INT NOT NULL, INDEX IDX_CEABBB4ABE6CAE90 (mission_id), INDEX IDX_CEABBB4A5585C142 (skill_id), PRIMARY KEY(mission_id, skill_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
-            SQL);
-            $this->addSql(<<<'SQL'
-                ALTER TABLE mission_skill ADD CONSTRAINT FK_CEABBB4ABE6CAE90 FOREIGN KEY (mission_id) REFERENCES mission (id) ON DELETE CASCADE
-            SQL);
-            $this->addSql(<<<'SQL'
-                ALTER TABLE mission_skill ADD CONSTRAINT FK_CEABBB4A5585C142 FOREIGN KEY (skill_id) REFERENCES skill (id) ON DELETE CASCADE
-            SQL);
+        $this->addSql(<<<'SQL'
+            CREATE TABLE mission_skill (mission_id INT NOT NULL, skill_id INT NOT NULL, INDEX IDX_CEABBB4ABE6CAE90 (mission_id), INDEX IDX_CEABBB4A5585C142 (skill_id), PRIMARY KEY(mission_id, skill_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE mission_skill ADD CONSTRAINT FK_CEABBB4ABE6CAE90 FOREIGN KEY (mission_id) REFERENCES mission (id) ON DELETE CASCADE
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE mission_skill ADD CONSTRAINT FK_CEABBB4A5585C142 FOREIGN KEY (skill_id) REFERENCES skill (id) ON DELETE CASCADE
+        SQL);
         }
         
         $this->addSql(<<<'SQL'

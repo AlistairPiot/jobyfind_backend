@@ -55,7 +55,7 @@ class AuthController extends AbstractController
         $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
         $user->setPassword($hashedPassword);
 
-        // Définir le rôle choisi par l'utilisateur (après validation)
+        // Définir le rôle choisi par l'utilisateur
         $user->setRoles([$requestedRole]);
 
         // Sauvegarder en base de données
@@ -64,8 +64,6 @@ class AuthController extends AbstractController
 
         return new JsonResponse(['message' => 'User created successfully', 'role' => $requestedRole], 201);
     }
-
-
 
     #[Route('/api/login', name: 'api_login', methods: ['POST'])]
     public function login(Request $request): JsonResponse

@@ -84,13 +84,13 @@ class AuthController extends AbstractController
             return new JsonResponse(['error' => 'Invalid credentials'], 401);
         }
 
-        // Générer un token JWT
+        // Générer un token JWT à partir du user
         $token = $this->JWTManager->create($user);
 
         // Retourner le token et les rôles de l'utilisateur
         return new JsonResponse([
             'token' => $token,
-            'roles' => $user->getRoles(), // Ajouter les rôles de l'utilisateur dans la réponse
+            'roles' => $user->getRoles(),
             'userId' => $user->getId(),
         ]);
     }
